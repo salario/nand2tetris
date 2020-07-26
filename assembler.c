@@ -22,7 +22,7 @@ unsigned int hash(const char *symbol);
 bool insert(const char *symbol, unsigned address);
 char* trim(char *str);
 
-
+// Global variables
 char cinst[17];
 char reverse[17];
 char final_a[17];
@@ -45,6 +45,7 @@ node *table[N] = {NULL};
 // Set loaded variable to false
 bool loaded = false;
 
+// Main program
 int main(int argc, char *argv[])
 {
     // Check for correct number of args
@@ -118,6 +119,7 @@ int main(int argc, char *argv[])
     
     char line[200];
     
+    // Loop through asm file and output translated lines to hack file.		
     while(fgets(line, sizeof(line), file))
 	{
 	    char *new_line;
@@ -143,7 +145,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-// Convert decimal to binary number
+// Convert decimal to binary number (string)
 const char* dec_to_bin(int n)
 {
     if (0 <= n && n <= 65536)
@@ -194,6 +196,7 @@ const char* dest(const char *instruction)
     free(res);
 }
 
+// Handle Computation instructions
 const char* comp(const char *instruction)
 {
     char *res;
@@ -280,7 +283,7 @@ const char* comp(const char *instruction)
     free(res);
 }
 
-// Handle Jump instruction
+// Handle Jump instructions
 const char* jump(const char *instruction)
 {
     char *res;
@@ -309,7 +312,7 @@ const char* jump(const char *instruction)
     free(res);
 }
  
-// Parse each instruction line and return instruction code
+// Parse each instruction line and return instruction code for main function
 const char* parser(char *line)
 {
     char *code_line;
@@ -323,17 +326,21 @@ const char* parser(char *line)
     if (code_line[0] == '@')
 	{
 	    code_line++;
+	    
+	    // If the instruction is variable A Instruction
 	    if (isalpha(code_line[0]))
 		{
 		    strcpy(final_a, dec_to_bin(symboladdress(code_line)));
 		    return final_a;
 		}
+	    // If the instruction is numeric A Instruction
 	    else
 		{
 		    strcpy(final_a, dec_to_bin(atoi(code_line)));
 		    return final_a;
 		}
 	}
+    // If instruction is C instruction
     else
 	{
 	    strcpy(final_a, "111");
@@ -345,7 +352,7 @@ const char* parser(char *line)
     free(code_line);
 }		    
 
-// Check if symbol is already in hash table
+// Check if symbol is already in hash table and return address value if so
 unsigned symboladdress(const char *symbol)
 {
     unsigned index = hash(symbol);
@@ -366,6 +373,7 @@ unsigned symboladdress(const char *symbol)
     return 0;
 }
 
+// Check if symbol is already in hash table
 bool checksymbol(const char *symbol)
 {
     unsigned index = hash(symbol);
@@ -441,7 +449,7 @@ bool loadsymbols(const char *asmfile)
     return true;
 }
 
-// Insert labels to hash table
+// Insert labels to hash table (pre-processing asm file)
 bool loadlabels(const char *asmfile)
 {
     char line[200];
@@ -487,7 +495,7 @@ bool loadlabels(const char *asmfile)
     return true;
 }
 
-// Insert predefined symbols to hash table
+// Insert predefined symbols to hash table (pre-processing asm file)
 bool loadpredefined(void)
 {
     bool insert_success = false;
@@ -757,7 +765,7 @@ bool unload(void)
     return true;
 }
 
-
+// Function to trim leading whitespace in lines read from asm file
 char* trim(char *str)
 {
     for (int i = 0; str[0] == ' ' || str[0] == '\t'; str++);
